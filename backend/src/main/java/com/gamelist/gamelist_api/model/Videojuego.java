@@ -16,8 +16,6 @@ public class Videojuego {
     @NotBlank(message = "El título es obligatorio")
     private String titulo;
 
-    private String plataforma;
-
     @NotNull(message = "El año es obligatorio")
     private Integer anio;
 
@@ -32,19 +30,23 @@ public class Videojuego {
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
+    @ManyToOne
+    @JoinColumn(name = "plataforma_id")
+    private Plataforma plataforma;
+
     public Videojuego() {}
 
     public Long getId() { return id; }
     public String getTitulo() { return titulo; }
-    public String getPlataforma() { return plataforma; }
     public Integer getAnio() { return anio; }
     public String getEstado() { return estado; }
     public Categoria getCategoria() { return categoria; }
+    public Plataforma getPlataforma() { return plataforma; }
 
     public void setId(Long id) { this.id = id; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
-    public void setPlataforma(String plataforma) { this.plataforma = plataforma; }
     public void setAnio(Integer anio) { this.anio = anio; }
     public void setEstado(String estado) { this.estado = estado; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+    public void setPlataforma(Plataforma plataforma) { this.plataforma = plataforma; }
 }

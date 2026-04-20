@@ -32,11 +32,13 @@ public class VideojuegoService {
     public Videojuego actualizarVideojuego(Long id, Videojuego nuevo) {
         Videojuego existente = obtenerPorId(id);
         existente.setTitulo(nuevo.getTitulo());
-        existente.setPlataforma(nuevo.getPlataforma());
         existente.setAnio(nuevo.getAnio());
         existente.setEstado(nuevo.getEstado());
         if (nuevo.getCategoria() != null) {
             existente.setCategoria(nuevo.getCategoria());
+        }
+        if (nuevo.getPlataforma() != null) {
+            existente.setPlataforma(nuevo.getPlataforma());
         }
         return videojuegoRepository.save(existente);
     }
@@ -48,5 +50,9 @@ public class VideojuegoService {
 
     public List<Videojuego> listarPorCategoria(Long categoriaId) {
         return videojuegoRepository.findByCategoriaId(categoriaId);
+    }
+
+    public List<Videojuego> listarPorPlataforma(Long plataformaId) {
+        return videojuegoRepository.findByPlataformaId(plataformaId);
     }
 }
