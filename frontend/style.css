@@ -118,7 +118,10 @@ label {
   box-shadow: 0 14px 28px rgba(0,0,0,0.12);
 }
 
+<<<<<<< HEAD
 /* Imagen de portada */
+=======
+>>>>>>> development
 .card-cover {
   width: 100%;
   height: 160px;
@@ -131,7 +134,10 @@ label {
   object-fit: cover;
 }
 
+<<<<<<< HEAD
 /* Placeholder sin imagen */
+=======
+>>>>>>> development
 .card-placeholder {
   width: 100%;
   height: 160px;
@@ -142,7 +148,10 @@ label {
   font-size: 52px;
 }
 
+<<<<<<< HEAD
 /* Cuerpo de la card */
+=======
+>>>>>>> development
 .card-body {
   padding: 14px;
 }
@@ -210,14 +219,20 @@ label {
 .edit-btn   { background: #f59e0b; }
 .delete-btn { background: #ef4444; }
 
+<<<<<<< HEAD
 /* Detalle */
+=======
+>>>>>>> development
 .detail-box {
   padding: 15px;
   background: #f9fafb;
   border-radius: 12px;
 }
 
+<<<<<<< HEAD
 /* Responsive */
+=======
+>>>>>>> development
 @media (max-width: 700px) {
   .grid {
     grid-template-columns: 1fr;

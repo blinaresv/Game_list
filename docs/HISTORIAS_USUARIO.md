@@ -177,4 +177,6 @@ Para depurar problemas fácilmente y documentar la API correctamente en producci
 - [x] springdoc-openapi 2.5 en lugar de springfox (compatible con Spring Boot 3)
 
 <!-- HU-02 implementada y verificada en feature/sprint1-backend-categorias -->
+<!-- HU cerrada via feature/sprint1-backend-wishlist -->
+<!-- HU cerrada via feature/sprint1-backend-filtros -->
 <!-- HU cerrada via feature/sprint1-backend-plataformas -->
