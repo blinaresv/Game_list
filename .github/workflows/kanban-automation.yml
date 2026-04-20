@@ -65,7 +65,7 @@ jobs:
             }
 
             const inProgressOption = statusField.options.find(o =>
-              o.name === 'In Progress' || o.name === 'En progreso'
+              o.name.toLowerCase() === 'in progress' || o.name.toLowerCase() === 'en progreso'
             );
             if (!inProgressOption) {
               console.log('Opción In Progress no encontrada');
@@ -163,7 +163,7 @@ jobs:
             const project = projectData.repository.projectV2;
             const statusField = project.fields.nodes.find(f => f.name === 'Status');
             const doneOption = statusField?.options.find(o =>
-              o.name === 'Done' || o.name === 'Terminado'
+              o.name.toLowerCase() === 'done' || o.name.toLowerCase() === 'terminado'
             );
 
             if (!statusField || !doneOption) {
