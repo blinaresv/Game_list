@@ -1,0 +1,200 @@
+name: 📋 Kanban Automation
+
+on:
+  issues:
+    types: [assigned]
+  pull_request:
+    types: [closed]
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Al asignar un issue → mueve card a "In Progress"
+  # ─────────────────────────────────────────────
+  issue-to-in-progress:
+    name: Issue asignado → In Progress
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'assigned'
+    steps:
+      - name: Mover card a In Progress
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          script: |
+            const issueNumber = context.payload.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const projectNumber = parseInt('${{ vars.PROJECT_NUMBER }}') || 1;
+
+            // Buscar el proyecto del repositorio
+            const projectsQuery = `
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  projectV2(number: $number) {
+                    id
+                    fields(first: 20) {
+                      nodes {
+                        ... on ProjectV2SingleSelectField {
+                          id
+                          name
+                          options { id name }
+                        }
+                      }
+                    }
+                    items(first: 100) {
+                      nodes {
+                        id
+                        content {
+                          ... on Issue { number }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const projectData = await github.graphql(projectsQuery, {
+              owner, repo, number: projectNumber
+            });
+
+            const project = projectData.repository.projectV2;
+            const statusField = project.fields.nodes.find(f => f.name === 'Status');
+            if (!statusField) {
+              console.log('Campo Status no encontrado');
+              return;
+            }
+
+            const inProgressOption = statusField.options.find(o =>
+              o.name === 'In Progress' || o.name === 'En progreso'
+            );
+            if (!inProgressOption) {
+              console.log('Opción In Progress no encontrada');
+              return;
+            }
+
+            const item = project.items.nodes.find(i =>
+              i.content && i.content.number === issueNumber
+            );
+            if (!item) {
+              console.log(`Issue #${issueNumber} no encontrado en el proyecto`);
+              return;
+            }
+
+            await github.graphql(`
+              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $projectId
+                  itemId: $itemId
+                  fieldId: $fieldId
+                  value: { singleSelectOptionId: $optionId }
+                }) { projectV2Item { id } }
+              }
+            `, {
+              projectId: project.id,
+              itemId: item.id,
+              fieldId: statusField.id,
+              optionId: inProgressOption.id
+            });
+
+            console.log(`✅ Issue #${issueNumber} movido a In Progress`);
+
+  # ─────────────────────────────────────────────
+  # Al cerrar un PR merged → mueve card a "Done"
+  # ─────────────────────────────────────────────
+  pr-to-done:
+    name: PR merged → Done
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    steps:
+      - name: Obtener issues cerrados por el PR
+        id: get-issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const projectNumber = parseInt('${{ vars.PROJECT_NUMBER }}') || 1;
+
+            // Buscar issues vinculados al PR via el body (closes #N)
+            const prBody = context.payload.pull_request.body || '';
+            const commitMsg = context.payload.pull_request.title || '';
+            const closePattern = /(?:closes?|fixes?|resolves?)\s+#(\d+)/gi;
+            const issueNumbers = [];
+            let match;
+            const combined = prBody + ' ' + commitMsg;
+            while ((match = closePattern.exec(combined)) !== null) {
+              issueNumbers.push(parseInt(match[1]));
+            }
+
+            if (issueNumbers.length === 0) {
+              console.log('No se encontraron issues vinculados al PR');
+              return;
+            }
+
+            const projectData = await github.graphql(`
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  projectV2(number: $number) {
+                    id
+                    fields(first: 20) {
+                      nodes {
+                        ... on ProjectV2SingleSelectField {
+                          id
+                          name
+                          options { id name }
+                        }
+                      }
+                    }
+                    items(first: 100) {
+                      nodes {
+                        id
+                        content {
+                          ... on Issue { number }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `, { owner, repo, number: projectNumber });
+
+            const project = projectData.repository.projectV2;
+            const statusField = project.fields.nodes.find(f => f.name === 'Status');
+            const doneOption = statusField?.options.find(o =>
+              o.name === 'Done' || o.name === 'Terminado'
+            );
+
+            if (!statusField || !doneOption) {
+              console.log('Campo Status u opción Done no encontrados');
+              return;
+            }
+
+            for (const issueNum of issueNumbers) {
+              const item = project.items.nodes.find(i =>
+                i.content && i.content.number === issueNum
+              );
+              if (!item) {
+                console.log(`Issue #${issueNum} no está en el proyecto`);
+                continue;
+              }
+
+              await github.graphql(`
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: { singleSelectOptionId: $optionId }
+                  }) { projectV2Item { id } }
+                }
+              `, {
+                projectId: project.id,
+                itemId: item.id,
+                fieldId: statusField.id,
+                optionId: doneOption.id
+              });
+
+              console.log(`✅ Issue #${issueNum} movido a Done`);
+            }
