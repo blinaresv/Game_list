@@ -20,6 +20,10 @@ public class Videojuego {
     @NotNull(message = "El año es obligatorio")
     private Integer anio;
 
+    private String descripcion;
+
+    private String imagenUrl;
+
     @NotBlank(message = "El estado es obligatorio")
     @Pattern(
         regexp = "PENDIENTE|JUGANDO|TERMINADO|FAVORITO",
@@ -44,6 +48,8 @@ public class Videojuego {
     public String getTitulo() { return titulo; }
     public Integer getAnio() { return anio; }
     public String getEstado() { return estado; }
+    public String getDescripcion() { return descripcion; }
+    public String getImagenUrl() { return imagenUrl; }
     public Categoria getCategoria() { return categoria; }
     public Plataforma getPlataforma() { return plataforma; }
 
@@ -51,6 +57,8 @@ public class Videojuego {
     public void setTitulo(String titulo) { this.titulo = titulo; }
     public void setAnio(Integer anio) { this.anio = anio; }
     public void setEstado(String estado) { this.estado = estado; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }
     public void setPlataforma(Plataforma plataforma) { this.plataforma = plataforma; }
 }

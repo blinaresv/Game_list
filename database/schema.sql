@@ -13,12 +13,14 @@ CREATE TABLE IF NOT EXISTS plataforma (
 );
 
 CREATE TABLE IF NOT EXISTS videojuego (
-    id           SERIAL PRIMARY KEY,
-    titulo       VARCHAR(255) NOT NULL,
-    anio         INTEGER      NOT NULL,
-    estado       VARCHAR(50)  NOT NULL
-                     CHECK (estado IN ('PENDIENTE','JUGANDO','TERMINADO','FAVORITO')),
-    categoria_id INTEGER REFERENCES categoria(id),
+    id            SERIAL PRIMARY KEY,
+    titulo        VARCHAR(255) NOT NULL,
+    anio          INTEGER      NOT NULL,
+    estado        VARCHAR(50)  NOT NULL
+                      CHECK (estado IN ('PENDIENTE','JUGANDO','TERMINADO','FAVORITO')),
+    descripcion   TEXT,
+    imagen_url    VARCHAR(500),
+    categoria_id  INTEGER REFERENCES categoria(id),
     plataforma_id INTEGER REFERENCES plataforma(id)
 );
 
