@@ -1,5 +1,6 @@
 package com.gamelist.gamelist_api.controller;
 
+import com.gamelist.gamelist_api.model.Categoria;
 import com.gamelist.gamelist_api.model.Videojuego;
 import com.gamelist.gamelist_api.service.VideojuegoService;
 import jakarta.validation.Valid;
@@ -44,6 +45,12 @@ public class VideojuegoController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         videojuegoService.eliminarVideojuego(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/categoria")
+    public ResponseEntity<Categoria> obtenerCategoria(@PathVariable Long id) {
+        Videojuego v = videojuegoService.obtenerPorId(id);
+        return ResponseEntity.ok(v.getCategoria());
     }
 
     @GetMapping("/categoria/{categoriaId}")
