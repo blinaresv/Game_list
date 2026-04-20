@@ -178,3 +178,4 @@ Para depurar problemas fácilmente y documentar la API correctamente en producci
 
 <!-- HU-02 implementada y verificada en feature/sprint1-backend-categorias -->
 <!-- HU cerrada via feature/sprint1-backend-filtros -->
+<!-- HU cerrada via feature/sprint1-backend-plataformas -->
