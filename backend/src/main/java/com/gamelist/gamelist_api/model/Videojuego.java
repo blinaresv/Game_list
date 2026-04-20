@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.util.List;
 
 @Entity
 @Table(name = "videojuego")
@@ -33,6 +34,9 @@ public class Videojuego {
     @ManyToOne
     @JoinColumn(name = "plataforma_id")
     private Plataforma plataforma;
+
+    @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Resena> resenas = new java.util.ArrayList<>();
 
     public Videojuego() {}
 
